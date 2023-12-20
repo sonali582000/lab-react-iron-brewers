@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { useState } from "react";
+
+const BASE_API_URL = "https://ih-beers-api2.herokuapp.com";
 
 function AddBeerPage() {
   // State variables to store the values of the form inputs. You can leave these as they are.
@@ -21,20 +24,48 @@ function AddBeerPage() {
   const handleAttenuationLevel = (e) => setAttenuationLevel(e.target.value);
   const handleContributedBy = (e) => setContributedBy(e.target.value);
 
-
-
   // TASK:
   // 1. Create a function to handle the form submission and send the form data to the Beers API to create a new beer.
   // 2. Use axios to make a POST request to the Beers API.
   // 3. Once the beer is created, navigate the user to the page showing the list of all beers.
 
+  const handleSubmit = async () => {
+    const payload = {
+      name,
+      tagline,
+      description,
+      image_url: imageUrl,
+      first_brewed: firstBrewed,
+      brewers_tips: brewersTips,
+      attenuation_level: attenuationLevel,
+      contributed_by: contributedBy,
+    };
+    try {
+      const response = await fetch(`${BASE_API_URL}/beers/new`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "applicatio/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      if (response.ok) {
+        const newBeer = await response.json();
+        console.log(newBeer);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  useEffect(() => {
+    handleSubmit();
+  }, []);
 
   // Structure and the content of the page showing the form for adding a new beer. You can leave this as it is.
   return (
     <>
       <div className="d-inline-flex flex-column w-100 p-4">
-        <form>
+        <form onSubmit={handleSubmit}>
           <label>Name</label>
           <input
             className="form-control mb-4"
@@ -122,7 +153,9 @@ function AddBeerPage() {
             value={contributedBy}
             onChange={handleContributedBy}
           />
-          <button className="btn btn-primary btn-round">Add Beer</button>
+          <button className="btn btn-primary btn-round" type="button">
+            Add Beer
+          </button>
         </form>
       </div>
     </>
